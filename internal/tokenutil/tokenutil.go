@@ -41,7 +41,7 @@ func CreateAccessToken(user *domain.User, secret string, expiry int, accessToken
 		Token:     t,
 		UserID:    user.ID,
 		Revoked:   false,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().Unix(),
 		ExpiresAt: exp,
 	})
 	if err != nil {
@@ -72,7 +72,7 @@ func CreateRefreshToken(user *domain.User, secret string, expiry int, accessToke
 		Token:     rt,
 		UserID:    user.ID,
 		Revoked:   false,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().Unix(),
 		ExpiresAt: exp,
 	})
 	if err != nil {

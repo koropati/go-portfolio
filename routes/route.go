@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/bootstrap"
 	"github.com/koropati/go-portfolio/internal/cryptos"
+	"github.com/koropati/go-portfolio/internal/validator"
 	"gorm.io/gorm"
 )
 
@@ -27,15 +28,16 @@ type SetupConfig struct {
 	CasbinEnforcer *casbin.Enforcer
 	Cryptos        cryptos.Cryptos
 	Gin            *gin.Engine
+	Validator      *validator.Validator
 }
 
 func Setup(config *SetupConfig) {
-	config.Gin.Static("v1/assets", "./templates/assets")
+	config.Gin.Static("assets", "./templates/assets")
 	config.Gin.LoadHTMLGlob("./templates/html/*.html")
 
 	// All Public APIs
-	publicRouterV1 := config.Gin.Group("/v1")
+	publicRouter := config.Gin.Group("/")
 
-	NewRegisterRouter(config, publicRouterV1)
+	NewRegisterRouter(config, publicRouter)
 
 }

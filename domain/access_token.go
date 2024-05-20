@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -12,11 +11,11 @@ const (
 )
 
 type AccessToken struct {
-	Token     string `gorm:"primaryKey" json:"token"`
-	UserID    uuid.UUID
-	Revoked   bool
-	CreatedAt time.Time
-	ExpiresAt int64
+	Token     string    `gorm:"primaryKey" json:"token"`
+	UserID    uuid.UUID `gorm:"type:char(36);not null;index;foreignKey:ID" json:"user_id"`
+	Revoked   bool      `gorm:"default:false" json:"revoked"`
+	CreatedAt int64     `gorm:"autoCreateTime" json:"created_at"`
+	ExpiresAt int64     `gorm:"index" json:"expires_at"`
 }
 
 type AccessTokenRepository interface {

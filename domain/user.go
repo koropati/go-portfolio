@@ -13,19 +13,19 @@ const (
 )
 
 type User struct {
-	ID       uuid.UUID `gorm:"primaryKey" json:"id"`
-	Name     string    `json:"name"`
-	Email    string    `gorm:"unique" json:"email"`
+	ID       uuid.UUID `gorm:"primaryKey;type:char(36)" json:"id"`
+	Name     string    `gorm:"size:255;index" json:"name"`
+	Email    string    `gorm:"unique;size:255;index" json:"email"`
 	Password string    `json:"-"`
-	IsActive bool      `json:"is_active"`
-	Role     string    `json:"role"`
+	IsActive bool      `gorm:"index" json:"is_active"`
+	Role     string    `gorm:"size:16;index" json:"role"`
 }
 
 type RegisterUser struct {
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	Password        string `json:"password"`
-	ConfirmPassword string `json:"confirm_password"`
+	Name            string `json:"name" validate:"required"`
+	Email           string `json:"email" validate:"required,email"`
+	Password        string `json:"password" validate:"required"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
 
 func (ru *RegisterUser) ToUser() (user User, err error) {

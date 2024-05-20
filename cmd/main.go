@@ -228,6 +228,7 @@ func handleCommand() {
 				CasbinEnforcer: app.CasbinEnforcer,
 				Cryptos:        app.Cryptos,
 				Gin:            gin,
+				Validator:      app.Validator,
 			}
 
 			routes.Setup(&routeConfig)

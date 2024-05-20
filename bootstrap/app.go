@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"github.com/casbin/casbin"
 	"github.com/koropati/go-portfolio/internal/cryptos"
+	"github.com/koropati/go-portfolio/internal/validator"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,7 @@ type Application struct {
 	DB             *gorm.DB
 	CasbinEnforcer *casbin.Enforcer
 	Cryptos        cryptos.Cryptos
+	Validator      *validator.Validator
 }
 
 type AppFunc func(*Application)
@@ -22,6 +24,7 @@ func defaultApp() Application {
 		DB:             NewDatabase(myConfig),
 		CasbinEnforcer: NewCasbinEnforcer(myConfig),
 		Cryptos:        NewCryptos(myConfig),
+		Validator:      NewValidator(),
 	}
 }
 
@@ -39,6 +42,7 @@ func App() Application {
 	app.DB = NewDatabase(app.Config)
 	app.CasbinEnforcer = NewCasbinEnforcer(app.Config)
 	app.Cryptos = NewCryptos(app.Config)
+	app.Validator = NewValidator()
 
 	return *app
 }

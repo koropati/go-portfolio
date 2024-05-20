@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"fmt"
 
+	"github.com/koropati/go-portfolio/domain"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,6 +21,7 @@ func NewDatabase(config *Config) *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
+	AutoMigrate(db)
 	return db
 }
 
@@ -28,4 +30,12 @@ func CloseDatabase(db *gorm.DB) {
 	if err := sqlDB.Close(); err != nil {
 		panic("failed to close database")
 	}
+}
+
+func AutoMigrate(db *gorm.DB) {
+	db.AutoMigrate(
+		&domain.User{},
+		&domain.AccessToken{},
+		&domain.RefreshToken{},
+	)
 }

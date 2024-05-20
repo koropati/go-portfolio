@@ -14,6 +14,9 @@ func NewRegisterRouter(cfg *SetupConfig, group *gin.RouterGroup) {
 		UserUsecase: usecase.NewUserUsecase(ur, cfg.Timeout),
 		Config:      cfg.Config,
 		Cryptos:     cfg.Cryptos,
+		Validator:   cfg.Validator,
 	}
+
+	group.GET("/register", sc.Index)
 	group.POST("/register", sc.Register)
 }
