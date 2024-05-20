@@ -1,0 +1,48 @@
+package bootstrap
+
+import (
+	"github.com/casbin/casbin"
+	"github.com/koropati/go-portfolio/internal/cryptos"
+	"gorm.io/gorm"
+)
+
+type Application struct {
+	Config         *Config
+	DB             *gorm.DB
+	CasbinEnforcer *casbin.Enforcer
+	Cryptos        cryptos.Cryptos
+}
+
+type AppFunc func(*Application)
+
+func defaultApp() Application {
+	myConfig := NewConfig()
+	return Application{
+		Config:         myConfig,
+		DB:             NewDatabase(myConfig),
+		CasbinEnforcer: NewCasbinEnforcer(myConfig),
+		Cryptos:        NewCryptos(myConfig),
+	}
+}
+
+func NewApp(opts ...AppFunc) *Application {
+	app := defaultApp()
+	for _, fn := range opts {
+		fn(&app)
+	}
+	return &app
+}
+
+func App() Application {
+	app := &Application{}
+	app.Config = NewConfig()
+	app.DB = NewDatabase(app.Config)
+	app.CasbinEnforcer = NewCasbinEnforcer(app.Config)
+	app.Cryptos = NewCryptos(app.Config)
+
+	return *app
+}
+
+func (app *Application) CloseDBConnection() {
+	CloseDatabase(app.DB)
+}
