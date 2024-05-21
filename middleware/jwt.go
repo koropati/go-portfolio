@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/cryptos"
+	randomstr "github.com/koropati/go-portfolio/internal/reandomstr"
 	"github.com/koropati/go-portfolio/internal/tokenutil"
 	"github.com/koropati/go-portfolio/internal/urlutil"
 )
@@ -76,7 +77,14 @@ func SetUserContext(c *gin.Context, cryptos cryptos.Cryptos, userID, userRole st
 	if err != nil {
 		panic(err)
 	}
-	encryptedUserRole, err := cryptos.Encrypt(userRole)
+
+	randomStr := randomstr.New(true, true, true, false)
+
+	garbage := randomStr.GenerateRandomString(5)
+
+	userRoleWithGarbage := userRole + "_" + garbage
+
+	encryptedUserRole, err := cryptos.Encrypt(userRoleWithGarbage)
 	if err != nil {
 		panic(err)
 	}
@@ -91,10 +99,11 @@ func GetUserContext(c *gin.Context, cryptos cryptos.Cryptos) (userID string, use
 	if err != nil {
 		panic(err)
 	}
-	userRole, err = cryptos.Decrypt(encryptedUserRole)
+	userRoleWithGarbage, err := cryptos.Decrypt(encryptedUserRole)
 	if err != nil {
 		panic(err)
 	}
+	userRole = strings.Split(userRoleWithGarbage, "_")[0]
 	return userID, userRole
 }
 
