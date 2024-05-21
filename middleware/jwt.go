@@ -8,6 +8,7 @@ import (
 	"github.com/casbin/casbin"
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/domain"
+	"github.com/koropati/go-portfolio/internal/cryptos"
 	"github.com/koropati/go-portfolio/internal/tokenutil"
 	"github.com/koropati/go-portfolio/internal/urlutil"
 )
@@ -23,7 +24,7 @@ const (
 	AccessToken     = "access_token"
 )
 
-func JwtAuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, accessTokenUsecase domain.AccessTokenUsecase, refreshTokenUsecase domain.RefreshTokenUsecase) gin.HandlerFunc {
+func JwtAuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryptos.Cryptos, accessTokenUsecase domain.AccessTokenUsecase, refreshTokenUsecase domain.RefreshTokenUsecase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 		authToken, err := parseAuthorizationHeader(authHeader)
@@ -50,7 +51,7 @@ func JwtAuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, accessTok
 			userRole = RoleAnonymous
 		}
 
-		setUserContext(c, userID, userRole)
+		SetUserContext(c, cryptos, userID, userRole)
 
 		if err := enforceCasbinRules(c, casbinEnforcer, userRole); err != nil {
 			c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Message})
@@ -70,9 +71,31 @@ func parseAuthorizationHeader(authHeader string) (string, error) {
 	return t[1], nil
 }
 
-func setUserContext(c *gin.Context, userID, userRole string) {
-	c.Set(UserIDContext, userID)
-	c.Set(UserRoleContext, userRole)
+func SetUserContext(c *gin.Context, cryptos cryptos.Cryptos, userID, userRole string) {
+	encryptedUserID, err := cryptos.Encrypt(userID)
+	if err != nil {
+		panic(err)
+	}
+	encryptedUserRole, err := cryptos.Encrypt(userRole)
+	if err != nil {
+		panic(err)
+	}
+	c.Set(UserIDContext, encryptedUserID)
+	c.Set(UserRoleContext, encryptedUserRole)
+}
+
+func GetUserContext(c *gin.Context, cryptos cryptos.Cryptos) (userID string, userRole string) {
+	encryptedUserID := c.GetString(UserIDContext)
+	encryptedUserRole := c.GetString(UserRoleContext)
+	userID, err := cryptos.Decrypt(encryptedUserID)
+	if err != nil {
+		panic(err)
+	}
+	userRole, err = cryptos.Decrypt(encryptedUserRole)
+	if err != nil {
+		panic(err)
+	}
+	return userID, userRole
 }
 
 func enforceCasbinRules(c *gin.Context, casbinEnforcer *casbin.Enforcer, userRole string) *domain.ErrorResponse {
