@@ -95,6 +95,10 @@ func SetUserContext(c *gin.Context, cryptos cryptos.Cryptos, userID, userRole st
 func GetUserContext(c *gin.Context, cryptos cryptos.Cryptos) (userID string, userRole string) {
 	encryptedUserID := c.GetString(UserIDContext)
 	encryptedUserRole := c.GetString(UserRoleContext)
+
+	if encryptedUserID == "" || encryptedUserRole == "" {
+		return "", ""
+	}
 	userID, err := cryptos.Decrypt(encryptedUserID)
 	if err != nil {
 		panic(err)
