@@ -37,6 +37,7 @@ func Setup(config *SetupConfig) {
 
 	// All Public APIs
 	publicRouter := config.Gin.Group("/")
+	NewLandingPageRouter(config, publicRouter)
 	NewRegisterRouter(config, publicRouter)
 
 }

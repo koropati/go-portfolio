@@ -18,7 +18,7 @@ type RegisterController struct {
 }
 
 func (rc *RegisterController) Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "register/index.html", nil)
+	c.HTML(http.StatusOK, "register.html", nil)
 }
 
 func (rc *RegisterController) Register(c *gin.Context) {

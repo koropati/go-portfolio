@@ -1,11 +1,13 @@
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulir Pendaftaran</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@pnotify/core/dist/PNotify.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@pnotify/core/dist/PNotify.css" rel="stylesheet">
     <script>
         function submitForm(event) {
             event.preventDefault();
@@ -16,26 +18,38 @@
                 confirm_password: document.getElementById('confirm_password').value
             };
 
-            fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
+            axios.post('/register', formData)
+            .then(response => {
+                const data = response.data;
                 if (data.success) {
-                    alert('Pendaftaran berhasil!');
+                    PNotify.success({
+                        title: 'Pendaftaran Berhasil',
+                        text: 'Selamat! Pendaftaran Anda telah berhasil.',
+                        icon: 'success-icon.png'
+                    });
                 } else {
-                    alert('Pendaftaran gagal: ' + data.message);
+                    PNotify.error({
+                        title: 'Pendaftaran Gagal',
+                        text: 'Maaf, terjadi kesalahan: ' + data.message,
+                        icon: 'error-icon.png'
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan pada server');
+                PNotify.error({
+                    title: 'Error Server',
+                    text: 'Terjadi kesalahan pada server, silakan coba lagi nanti.',
+                    icon: 'error-icon.png'
+                });
             });
         }
+
+        // Meminta izin untuk menampilkan notifikasi
+        document.addEventListener('DOMContentLoaded', function () {
+            if (Notification.permission !== 'granted')
+                Notification.requestPermission();
+        });
     </script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
