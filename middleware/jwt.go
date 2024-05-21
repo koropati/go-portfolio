@@ -30,20 +30,20 @@ func JwtAuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos c
 		authHeader := c.Request.Header.Get("Authorization")
 		authToken, err := parseAuthorizationHeader(authHeader)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusUnauthorized, domain.JsonResponse{Message: err.Error(), Success: false})
 			c.Abort()
 			return
 		}
 
 		if !accessTokenUsecase.IsValid(c, authToken) {
-			c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Token tidak valid atau telah kadaluarsa"})
+			c.JSON(http.StatusUnauthorized, domain.JsonResponse{Message: "Token tidak valid atau telah kadaluarsa", Success: false})
 			c.Abort()
 			return
 		}
 
 		userID, userRole, err := tokenutil.ExtractIDFromToken(authToken, secret, AccessToken, accessTokenUsecase, refreshTokenUsecase)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusUnauthorized, domain.JsonResponse{Message: err.Error(), Success: false})
 			c.Abort()
 			return
 		}
@@ -55,7 +55,7 @@ func JwtAuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos c
 		SetUserContext(c, cryptos, userID, userRole)
 
 		if err := enforceCasbinRules(c, casbinEnforcer, userRole); err != nil {
-			c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Message})
+			c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Message, Success: false})
 			c.Abort()
 			return
 		}
@@ -111,14 +111,14 @@ func GetUserContext(c *gin.Context, cryptos cryptos.Cryptos) (userID string, use
 	return userID, userRole
 }
 
-func enforceCasbinRules(c *gin.Context, casbinEnforcer *casbin.Enforcer, userRole string) *domain.ErrorResponse {
+func enforceCasbinRules(c *gin.Context, casbinEnforcer *casbin.Enforcer, userRole string) *domain.JsonResponse {
 	pathUrl := urlutil.RemoveAPIVersionMiddleware(c.Request.URL.Path)
 	res, err := casbinEnforcer.EnforceSafe(userRole, pathUrl, c.Request.Method)
 	if err != nil {
-		return &domain.ErrorResponse{Message: err.Error()}
+		return &domain.JsonResponse{Message: err.Error(), Success: false}
 	}
 	if !res {
-		return &domain.ErrorResponse{Message: "unauthorized"}
+		return &domain.JsonResponse{Message: "unauthorized", Success: false}
 	}
 	return nil
 }

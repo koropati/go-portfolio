@@ -18,7 +18,7 @@ type RegisterController struct {
 }
 
 func (rc *RegisterController) Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "register.html", nil)
+	c.HTML(http.StatusOK, "register/index.html", nil)
 }
 
 func (rc *RegisterController) Register(c *gin.Context) {
@@ -26,29 +26,30 @@ func (rc *RegisterController) Register(c *gin.Context) {
 
 	err := c.ShouldBind(&request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
 	err = rc.Validator.Validate(request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
 	userData, err := request.ToUser()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
 	err = rc.UserUsecase.Create(c, userData)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
-	c.JSON(http.StatusOK, domain.SuccessResponse{
+	c.JSON(http.StatusOK, domain.JsonResponse{
 		Message: "Registration Successful",
+		Success: true,
 	})
 }

@@ -38,19 +38,13 @@ type JwtCustomRefreshClaims struct {
 	jwt.StandardClaims
 }
 
-type ErrorResponse struct {
-	Message string      `json:"message"`
-	Detail  interface{} `json:"detail,omitempty"`
-}
-
-type SuccessResponse struct {
-	Message string `json:"message"`
-}
-
-type DataResponse struct {
-	Data     interface{} `json:"data"`
+type JsonResponse struct {
+	Data     interface{} `json:"data,omitempty"`
 	Resource string      `json:"resource,omitempty"`
 	Meta     interface{} `json:"meta,omitempty"`
+	Message  string      `json:"message"`
+	Success  bool        `json:"success"`
+	Detail   interface{} `json:"detail,omitempty"`
 }
 
 type TokenData struct {

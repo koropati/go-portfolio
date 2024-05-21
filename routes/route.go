@@ -32,12 +32,11 @@ type SetupConfig struct {
 }
 
 func Setup(config *SetupConfig) {
-	config.Gin.Static("assets", "./templates/assets")
-	config.Gin.LoadHTMLGlob("./templates/html/*.html")
+
+	ConfigHTMLTemplates(config)
 
 	// All Public APIs
 	publicRouter := config.Gin.Group("/")
-
 	NewRegisterRouter(config, publicRouter)
 
 }
