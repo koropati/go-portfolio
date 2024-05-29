@@ -16,5 +16,5 @@ type LandingPageController struct {
 }
 
 func (rc *LandingPageController) Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", nil)
+	c.HTML(http.StatusOK, "landing.tmpl", nil)
 }

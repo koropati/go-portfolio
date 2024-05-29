@@ -33,8 +33,8 @@ type SetupConfig struct {
 
 func Setup(config *SetupConfig) {
 
-	ConfigHTMLTemplates(config)
-
+	config.Gin.Static("assets", "./templates/assets")
+	config.Gin.LoadHTMLGlob("./templates/*.tmpl")
 	// All Public APIs
 	publicRouter := config.Gin.Group("/")
 	NewLandingPageRouter(config, publicRouter)

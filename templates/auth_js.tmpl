@@ -1,0 +1,50 @@
+{{define "auth_js.tmpl"}}
+<script src="assets/libs/feather-icons/feather.min.js"></script>
+<script src="assets/js/plugins.init.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@pnotify/core/dist/PNotify.js"></script>
+<script>
+    function submitRegisterForm(event) {
+        event.preventDefault();
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            confirm_password: document.getElementById('confirm_password').value
+        };
+
+        axios.post('/register', formData)
+        .then(response => {
+            const data = response.data;
+            if (data.success) {
+                PNotify.success({
+                    title: 'Registration Successful',
+                    text: 'Congratulations! Your registration has been successful.',
+                    icon: 'success-icon.png'
+                });
+            } else {
+                PNotify.error({
+                    title: 'Registration Failed',
+                    text: 'Sorry, an error occurred: ' + data.message,
+                    icon: 'error-icon.png'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            PNotify.error({
+                title: 'Error Server',
+                text: 'A server error occurred, please try again later.',
+                icon: 'error-icon.png'
+            });
+        });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (Notification.permission !== 'granted')
+            Notification.requestPermission();
+    });
+</script>
+{{end}}
