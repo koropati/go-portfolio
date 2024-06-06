@@ -6,8 +6,12 @@ import (
 	"github.com/casbin/casbin"
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/bootstrap"
+	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/cryptos"
 	"github.com/koropati/go-portfolio/internal/validator"
+	"github.com/koropati/go-portfolio/middleware"
+	"github.com/koropati/go-portfolio/repository"
+	"github.com/koropati/go-portfolio/usecase"
 	"gorm.io/gorm"
 )
 
@@ -35,9 +39,17 @@ func Setup(config *SetupConfig) {
 
 	config.Gin.Static("assets", "./templates/assets")
 	config.Gin.LoadHTMLGlob("./templates/*.tmpl")
+
 	// All Public APIs
 	publicRouter := config.Gin.Group("/")
 	NewLandingPageRouter(config, publicRouter)
 	NewRegisterRouter(config, publicRouter)
+	NewLoginRouter(config, publicRouter)
+
+	privateRouter := config.Gin.Group("/panel")
+	at := repository.NewAccessTokenRepository(config.DB, domain.AccessTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)
+	rt := repository.NewRefreshTokenRepository(config.DB, domain.RefreshTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)
+	privateRouter.Use(middleware.AuthMiddleware(config.Config.SecretKey, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))
+	NewDashboardPageRouter(config, privateRouter)
 
 }

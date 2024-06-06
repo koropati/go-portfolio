@@ -43,3 +43,15 @@ func (u *userUsecase) Delete(c context.Context, id uuid.UUID) error {
 	defer cancel()
 	return u.userRepository.Delete(ctx, id)
 }
+
+func (u *userUsecase) GetByEmail(c context.Context, email string) (user domain.User, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+	return u.userRepository.GetByEmail(ctx, email)
+}
+
+func (u *userUsecase) GetById(c context.Context, id uuid.UUID) (user domain.User, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+	return u.userRepository.GetById(ctx, id)
+}

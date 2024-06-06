@@ -7,14 +7,14 @@
 <script>
     function submitRegisterForm(event) {
         event.preventDefault();
-        const formData = {
+        const formDataRegister = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             password: document.getElementById('password').value,
             confirm_password: document.getElementById('confirm_password').value
         };
 
-        axios.post('/register', formData)
+        axios.post('/register', formDataRegister)
         .then(response => {
             const data = response.data;
             if (data.success) {
@@ -27,6 +27,40 @@
                 PNotify.error({
                     title: 'Registration Failed',
                     text: 'Sorry, an error occurred: ' + data.message,
+                    icon: 'error-icon.png'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            PNotify.error({
+                title: 'Error Server',
+                text: 'A server error occurred, please try again later.',
+                icon: 'error-icon.png'
+            });
+        });
+    }
+
+    function submitLoginForm(event) {
+        event.preventDefault();
+        const formDataRegister = {
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+        };
+
+        axios.post('/login', formDataRegister)
+        .then(response => {
+            const data = response.data;
+            if (data.success) {
+                PNotify.success({
+                    title: 'Login Successful',
+                    text: 'You will Redirected to admin panel',
+                    icon: 'success-icon.png'
+                });
+            } else {
+                PNotify.error({
+                    title: 'Login Failed',
+                    text: 'Wrong Email or Password',
                     icon: 'error-icon.png'
                 });
             }

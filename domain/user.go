@@ -28,6 +28,16 @@ type RegisterUser struct {
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
 
+type LoginUser struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
+type UserTokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 func (ru *RegisterUser) ToUser() (user User, err error) {
 	if ru.Password != ru.ConfirmPassword {
 		return User{}, errors.New("password not match")
@@ -56,6 +66,8 @@ func (ru *RegisterUser) ToUser() (user User, err error) {
 type UserRepository interface {
 	Create(c context.Context, user User) error
 	Retrieve(c context.Context, filter Filter) (users []User, meta MetaResponse, err error)
+	GetByEmail(c context.Context, email string) (user User, err error)
+	GetById(c context.Context, id uuid.UUID) (user User, err error)
 	Update(c context.Context, id uuid.UUID, data User) (user User, err error)
 	Delete(c context.Context, id uuid.UUID) error
 }
@@ -63,6 +75,8 @@ type UserRepository interface {
 type UserUsecase interface {
 	Create(c context.Context, user User) error
 	Retrieve(c context.Context, filter Filter) (users []User, meta MetaResponse, err error)
+	GetByEmail(c context.Context, email string) (user User, err error)
+	GetById(c context.Context, id uuid.UUID) (user User, err error)
 	Update(c context.Context, id uuid.UUID, data User) (user User, err error)
 	Delete(c context.Context, id uuid.UUID) error
 }

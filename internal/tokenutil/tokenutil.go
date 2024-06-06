@@ -36,8 +36,13 @@ func CreateAccessToken(user *domain.User, secret string, expiry int, accessToken
 		return "", err
 	}
 
+	uuidData, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
 	// Set token in Redis with expiry
 	err = accessTokenUsecase.Create(context.Background(), domain.AccessToken{
+		ID:        uuidData,
 		Token:     t,
 		UserID:    user.ID,
 		Revoked:   false,
@@ -67,8 +72,14 @@ func CreateRefreshToken(user *domain.User, secret string, expiry int, accessToke
 		return "", err
 	}
 
+	uuidData, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
+
 	// Set token in Redis with expiry
 	err = refreshTokenUsecase.Create(context.Background(), domain.RefreshToken{
+		ID:        uuidData,
 		Token:     rt,
 		UserID:    user.ID,
 		Revoked:   false,

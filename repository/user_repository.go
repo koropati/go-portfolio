@@ -94,3 +94,19 @@ func (u *userRepository) Delete(c context.Context, id uuid.UUID) error {
 	}
 	return nil
 }
+
+func (u *userRepository) GetByEmail(c context.Context, email string) (user domain.User, err error) {
+	result := u.database.WithContext(c).Table(u.table).Where("email = ?", email).First(&user)
+	if result.Error != nil {
+		return domain.User{}, result.Error
+	}
+	return user, nil
+}
+
+func (u *userRepository) GetById(c context.Context, id uuid.UUID) (user domain.User, err error) {
+	result := u.database.WithContext(c).Table(u.table).Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		return domain.User{}, result.Error
+	}
+	return user, nil
+}

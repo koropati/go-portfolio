@@ -11,7 +11,8 @@ const (
 )
 
 type AccessToken struct {
-	Token     string    `gorm:"primaryKey" json:"token"`
+	ID        uuid.UUID `gorm:"primaryKey" json:"id"`
+	Token     string    `gorm:"type:longtext" json:"token"`
 	UserID    uuid.UUID `gorm:"type:char(36);not null;index;foreignKey:ID" json:"user_id"`
 	Revoked   bool      `gorm:"default:false" json:"revoked"`
 	CreatedAt int64     `gorm:"autoCreateTime" json:"created_at"`
