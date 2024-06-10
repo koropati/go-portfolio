@@ -23,6 +23,7 @@
                     text: 'Congratulations! Your registration has been successful.',
                     icon: 'success-icon.png'
                 });
+                window.location.href = `/login`;
             } else {
                 PNotify.error({
                     title: 'Registration Failed',
@@ -52,11 +53,14 @@
         .then(response => {
             const data = response.data;
             if (data.success) {
+
                 PNotify.success({
                     title: 'Login Successful',
                     text: 'You will Redirected to admin panel',
                     icon: 'success-icon.png'
                 });
+
+                window.location.href = `/dashboard`;
             } else {
                 PNotify.error({
                     title: 'Login Failed',
@@ -68,8 +72,8 @@
         .catch(error => {
             console.error('Error:', error);
             PNotify.error({
-                title: 'Error Server',
-                text: 'A server error occurred, please try again later.',
+                title: 'Login Failed',
+                text: error.message,
                 icon: 'error-icon.png'
             });
         });

@@ -10,25 +10,27 @@ import (
 	"github.com/koropati/go-portfolio/internal/tokenutil"
 )
 
+const (
+	LoginUrlRedirect     = "/login"
+	DashboardUrlRedirect = "/dashboard"
+)
+
 func AuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryptos.Cryptos, accessTokenUsecase domain.AccessTokenUsecase, refreshTokenUsecase domain.RefreshTokenUsecase) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authToken, err := parseAuthorizationCookies(c)
+		authToken, err := GetAuthContext(c, cryptos, "access")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, domain.JsonResponse{Message: err.Error(), Success: false})
-			c.Abort()
+			c.Redirect(http.StatusFound, LoginUrlRedirect)
 			return
 		}
 
 		if !accessTokenUsecase.IsValid(c, authToken) {
-			c.JSON(http.StatusUnauthorized, domain.JsonResponse{Message: "Token tidak valid atau telah kadaluarsa", Success: false})
-			c.Abort()
+			c.Redirect(http.StatusFound, LoginUrlRedirect)
 			return
 		}
 
 		userID, userRole, err := tokenutil.ExtractIDFromToken(authToken, secret, AccessToken, accessTokenUsecase, refreshTokenUsecase)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, domain.JsonResponse{Message: err.Error(), Success: false})
-			c.Abort()
+			c.Redirect(http.StatusFound, LoginUrlRedirect)
 			return
 		}
 
@@ -39,8 +41,7 @@ func AuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryp
 		SetUserContext(c, cryptos, userID, userRole)
 
 		if err := enforceCasbinRules(c, casbinEnforcer, userRole); err != nil {
-			c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Message, Success: false})
-			c.Abort()
+			c.Redirect(http.StatusFound, LoginUrlRedirect)
 			return
 		}
 
@@ -48,12 +49,17 @@ func AuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryp
 	}
 }
 
-func parseAuthorizationCookies(c *gin.Context) (string, error) {
-	accessToken, err := c.Cookie("accessToken")
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Access token not found"})
-		return "", err
-	}
+func AuthPublicMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryptos.Cryptos, accessTokenUsecase domain.AccessTokenUsecase, refreshTokenUsecase domain.RefreshTokenUsecase) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authToken, _ := GetAuthContext(c, cryptos, "access")
+		if c.Request.URL.Path == "/" || c.Request.URL.Path == "/logout" {
+			c.Next()
+		}
+		if authToken != "" {
+			c.Redirect(http.StatusFound, DashboardUrlRedirect)
+		} else {
+			c.Next()
+		}
 
-	return accessToken, nil
+	}
 }

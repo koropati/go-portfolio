@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/casbin/casbin"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/cryptos"
@@ -15,14 +17,16 @@ import (
 )
 
 const (
-	UserIDContext   = "x-user-id"
-	UserRoleContext = "x-user-role"
-	RoleSuperAdmin  = "super_admin"
-	RoleAdmin       = "admin"
-	RoleStaff       = "staff"
-	RoleAnonymous   = "anonymous"
-	RefreshToken    = "refresh_token"
-	AccessToken     = "access_token"
+	UserIDContext      = "x-user-id"
+	UserRoleContext    = "x-user-role"
+	AuthAccessContext  = "x-a-auth"
+	AuthRefreshContext = "x-r-auth"
+	RoleSuperAdmin     = "super_admin"
+	RoleAdmin          = "admin"
+	RoleStaff          = "staff"
+	RoleAnonymous      = "anonymous"
+	RefreshToken       = "refresh_token"
+	AccessToken        = "access_token"
 )
 
 func JwtAuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryptos.Cryptos, accessTokenUsecase domain.AccessTokenUsecase, refreshTokenUsecase domain.RefreshTokenUsecase) gin.HandlerFunc {
@@ -72,6 +76,27 @@ func parseAuthorizationHeader(authHeader string) (string, error) {
 	return t[1], nil
 }
 
+func SetAuthContext(c *gin.Context, cryptos cryptos.Cryptos, accessToken string, refreshToken string) error {
+	encryptedAccessToken, err := cryptos.Encrypt(accessToken)
+	if err != nil {
+		return err
+	}
+	encryptedRefreshToken, err := cryptos.Encrypt(refreshToken)
+	if err != nil {
+		return err
+	}
+	log.Printf("Encrypt Access Token : %v\n", encryptedAccessToken)
+	log.Printf("Encrypt Refresh Token : %v\n", encryptedRefreshToken)
+	c.Set(AuthAccessContext, encryptedAccessToken)
+	c.Set(AuthRefreshContext, encryptedRefreshToken)
+
+	session := sessions.Default(c)
+	session.Set(AuthAccessContext, encryptedAccessToken)
+	session.Set(AuthRefreshContext, encryptedRefreshToken)
+	session.Save()
+	return nil
+}
+
 func SetUserContext(c *gin.Context, cryptos cryptos.Cryptos, userID, userRole string) {
 	encryptedUserID, err := cryptos.Encrypt(userID)
 	if err != nil {
@@ -109,6 +134,28 @@ func GetUserContext(c *gin.Context, cryptos cryptos.Cryptos) (userID string, use
 	}
 	userRole = strings.Split(userRoleWithGarbage, "_")[0]
 	return userID, userRole
+}
+
+func GetAuthContext(c *gin.Context, cryptos cryptos.Cryptos, tokenType string) (token string, err error) {
+	encryptedToken := ""
+	var dataSession interface{}
+	session := sessions.Default(c)
+	if tokenType == "refresh" {
+		dataSession = session.Get(AuthRefreshContext)
+	} else {
+		dataSession = session.Get(AuthAccessContext)
+	}
+	if dataSession == nil {
+		return "", errors.New("invalid session")
+	}
+
+	encryptedToken = dataSession.(string)
+
+	token, err = cryptos.Decrypt(encryptedToken)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func enforceCasbinRules(c *gin.Context, casbinEnforcer *casbin.Enforcer, userRole string) *domain.JsonResponse {

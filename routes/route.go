@@ -40,16 +40,19 @@ func Setup(config *SetupConfig) {
 	config.Gin.Static("assets", "./templates/assets")
 	config.Gin.LoadHTMLGlob("./templates/*.tmpl")
 
+	at := repository.NewAccessTokenRepository(config.DB, domain.AccessTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)
+	rt := repository.NewRefreshTokenRepository(config.DB, domain.RefreshTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)
+
 	// All Public APIs
 	publicRouter := config.Gin.Group("/")
+	publicRouter.Use(middleware.AuthPublicMiddleware(config.Config.AccessTokenSecret, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))
 	NewLandingPageRouter(config, publicRouter)
 	NewRegisterRouter(config, publicRouter)
 	NewLoginRouter(config, publicRouter)
+	NewLogoutRouter(config, publicRouter)
 
-	privateRouter := config.Gin.Group("/panel")
-	at := repository.NewAccessTokenRepository(config.DB, domain.AccessTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)
-	rt := repository.NewRefreshTokenRepository(config.DB, domain.RefreshTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)
-	privateRouter.Use(middleware.AuthMiddleware(config.Config.SecretKey, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))
+	privateRouter := config.Gin.Group("/")
+	privateRouter.Use(middleware.AuthMiddleware(config.Config.AccessTokenSecret, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))
 	NewDashboardPageRouter(config, privateRouter)
 
 }

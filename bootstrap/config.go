@@ -43,6 +43,7 @@ type Config struct {
 	CasbinModelPath             string `mapstructure:"CASBIN_MODEL_PATH"`
 	CasbinPolicyPath            string `mapstructure:"CASBIN_POLICY_PATH"`
 	SecretKey                   string `mapstructure:"SECRET_KEY"`
+	SessionKey                  string `mapstructure:"SESSION_KEY"`
 	TelegramBotToken            string `mapstructure:"TELEGRAM_BOT_TOKEN"`
 }
 

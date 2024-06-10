@@ -11,5 +11,5 @@ p, admin, /refresh, *
 p, admin, /refresh/*, *
 p, admin, /assets/*, *
 p, admin, /service, GET
-p, admin, /panel/dashboard, *
-p, admin, /panel/dashboard/*, *
+p, admin, /dashboard, *
+p, admin, /dashboard/*, *

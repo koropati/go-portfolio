@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/bootstrap"
 	"github.com/koropati/go-portfolio/middleware"
@@ -218,8 +219,14 @@ func handleCommand() {
 			db := app.DB
 			defer app.CloseDBConnection()
 
+			// Configure session store (replace with your chosen store)
+			store := sessions.NewCookieStore([]byte(app.Config.SessionKey))
+
+			// Use session middleware
+
 			gin := gin.Default()
 			gin.Use(middleware.CorsMiddleware())
+			gin.Use(sessions.Sessions("mysession", store))
 
 			routeConfig := routes.SetupConfig{
 				Config:         app.Config,

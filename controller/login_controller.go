@@ -69,7 +69,11 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	middleware.SetAuthCookies(accessToken, refreshToken)
+	err = middleware.SetAuthContext(c, lc.Cryptos, accessToken, refreshToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
+		return
+	}
 
 	c.JSON(http.StatusOK, domain.JsonResponse{
 		Message: "Login Successful",
