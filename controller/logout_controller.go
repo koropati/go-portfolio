@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/contrib/sessions"
@@ -9,6 +10,7 @@ import (
 	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/cryptos"
 	"github.com/koropati/go-portfolio/internal/validator"
+	"github.com/koropati/go-portfolio/middleware"
 )
 
 type LogoutController struct {
@@ -21,6 +23,19 @@ type LogoutController struct {
 }
 
 func (lc *LogoutController) Logout(c *gin.Context) {
+
+	refreshToken, errGetRefresh := middleware.GetAuthContext(c, lc.Cryptos, "refresh")
+	if errGetRefresh != nil {
+		log.Printf("Error Get Refresh Token : %v\n", errGetRefresh)
+	}
+	accessToken, errGetAccess := middleware.GetAuthContext(c, lc.Cryptos, "access")
+	if errGetAccess != nil {
+		log.Printf("Error Get Access Token : %v\n", errGetRefresh)
+	}
+
+	lc.AccessTokenUsecase.Delete(c, accessToken)
+	lc.RefreshTokenUsecase.Delete(c, refreshToken)
+
 	session := sessions.Default(c) // Get the current session
 
 	// Clear the session data

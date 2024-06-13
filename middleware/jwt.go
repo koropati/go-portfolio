@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 
@@ -85,8 +84,7 @@ func SetAuthContext(c *gin.Context, cryptos cryptos.Cryptos, accessToken string,
 	if err != nil {
 		return err
 	}
-	log.Printf("Encrypt Access Token : %v\n", encryptedAccessToken)
-	log.Printf("Encrypt Refresh Token : %v\n", encryptedRefreshToken)
+
 	c.Set(AuthAccessContext, encryptedAccessToken)
 	c.Set(AuthRefreshContext, encryptedRefreshToken)
 
