@@ -33,6 +33,16 @@ type LoginUser struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type ForgotPassword struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
+type ResetPassword struct {
+	Password   string `json:"password" validate:"required"`
+	RePassword string `json:"re_password" validate:"required"`
+	Token      string `json:"token" validate:"required"`
+}
+
 type UserTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
@@ -69,6 +79,7 @@ type UserRepository interface {
 	GetByEmail(c context.Context, email string) (user User, err error)
 	GetById(c context.Context, id uuid.UUID) (user User, err error)
 	Update(c context.Context, id uuid.UUID, data User) (user User, err error)
+	UpdatePassword(c context.Context, id uuid.UUID, newPasswordHash string) (err error)
 	Delete(c context.Context, id uuid.UUID) error
 }
 
@@ -78,5 +89,6 @@ type UserUsecase interface {
 	GetByEmail(c context.Context, email string) (user User, err error)
 	GetById(c context.Context, id uuid.UUID) (user User, err error)
 	Update(c context.Context, id uuid.UUID, data User) (user User, err error)
+	UpdatePassword(c context.Context, id uuid.UUID, newPasswordHash string) (err error)
 	Delete(c context.Context, id uuid.UUID) error
 }

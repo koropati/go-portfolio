@@ -22,11 +22,11 @@ type LoginController struct {
 	Validator           *validator.Validator
 }
 
-func (lc *LoginController) Index(c *gin.Context) {
+func (ctr *LoginController) Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.tmpl", nil)
 }
 
-func (lc *LoginController) Login(c *gin.Context) {
+func (ctr *LoginController) Login(c *gin.Context) {
 	var request domain.LoginUser
 
 	err := c.ShouldBind(&request)
@@ -35,13 +35,13 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	err = lc.Validator.Validate(request)
+	err = ctr.Validator.Validate(request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
-	user, err := lc.UserUsecase.GetByEmail(c, request.Email)
+	user, err := ctr.UserUsecase.GetByEmail(c, request.Email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: "Wrong email or password", Success: false})
 		return
@@ -57,19 +57,19 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := tokenutil.CreateAccessToken(&user, lc.Config.AccessTokenSecret, lc.Config.AccessTokenExpiryHour, lc.AccessTokenUsecase)
+	accessToken, err := tokenutil.CreateAccessToken(&user, ctr.Config.AccessTokenSecret, ctr.Config.AccessTokenExpiryHour, ctr.AccessTokenUsecase)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
-	refreshToken, err := tokenutil.CreateRefreshToken(&user, lc.Config.RefreshTokenSecret, lc.Config.RefreshTokenExpiryHour, accessToken, lc.RefreshTokenUsecase)
+	refreshToken, err := tokenutil.CreateRefreshToken(&user, ctr.Config.RefreshTokenSecret, ctr.Config.RefreshTokenExpiryHour, accessToken, ctr.RefreshTokenUsecase)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
 
-	err = middleware.SetAuthContext(c, lc.Cryptos, accessToken, refreshToken)
+	err = middleware.SetAuthContext(c, ctr.Cryptos, accessToken, refreshToken)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return

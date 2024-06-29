@@ -57,19 +57,19 @@ func GetFirstPathName(pathURL string) string {
 
 }
 
-func CreateUrlVerificationEmail(request *http.Request, apiVersion string, verificationToken string) (result string) {
+func CreateUrlVerificationEmail(request *http.Request, verificationToken string) (result string) {
 	baseUrl := GetBaseURL(request)
-	result = baseUrl + "/" + apiVersion + "/verify-email?token=" + url.QueryEscape(verificationToken)
+	result = baseUrl + "/verify-email?token=" + url.QueryEscape(verificationToken)
 	return result
 }
 
-func GenerateRedirectForgotPassword(baseUrlFrontEnd string, pathUrl string, isSuccess bool, msg string, forgotPasswordToken string) (urlRedirectToFE string) {
-	urlRedirectToFE = baseUrlFrontEnd + pathUrl + "?success=" + strconv.FormatBool(isSuccess) + "&msg=" + msg + "&t=" + forgotPasswordToken
+func GenerateRedirectForgotPassword(baseUrlFrontEnd string, pathUrl string, isSuccess bool, msg string, forgotPasswordToken string, name string) (urlRedirectToFE string) {
+	urlRedirectToFE = baseUrlFrontEnd + pathUrl + "?success=" + strconv.FormatBool(isSuccess) + "&msg=" + msg + "&t=" + url.QueryEscape(forgotPasswordToken) + "&name=" + name
 	return
 }
 
-func CreateUrlForgotPassword(request *http.Request, apiVersion string, forgotPasswordToken string) (result string) {
+func CreateUrlForgotPassword(request *http.Request, forgotPasswordToken string) (result string) {
 	baseUrl := GetBaseURL(request)
-	result = baseUrl + "/" + apiVersion + "/verify-forgot-password?token=" + url.QueryEscape(forgotPasswordToken)
+	result = baseUrl + "/forgot-password/verify?token=" + url.QueryEscape(forgotPasswordToken)
 	return result
 }

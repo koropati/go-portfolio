@@ -84,6 +84,11 @@ func (u *userRepository) Update(c context.Context, id uuid.UUID, data domain.Use
 	return user, nil
 }
 
+func (u *userRepository) UpdatePassword(c context.Context, id uuid.UUID, newPasswordHash string) (err error) {
+	err = u.database.WithContext(c).Table(u.table).Where(queryFindByID, id).Update("password", newPasswordHash).Error
+	return err
+}
+
 func (u *userRepository) Delete(c context.Context, id uuid.UUID) error {
 	result := u.database.WithContext(c).Table(u.table).Where(queryFindByID, id).Delete(&domain.User{})
 	if result.Error != nil {

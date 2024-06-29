@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"github.com/casbin/casbin"
 	"github.com/koropati/go-portfolio/internal/cryptos"
+	"github.com/koropati/go-portfolio/internal/mailer"
 	"github.com/koropati/go-portfolio/internal/validator"
 	"gorm.io/gorm"
 )
@@ -13,6 +14,7 @@ type Application struct {
 	CasbinEnforcer *casbin.Enforcer
 	Cryptos        cryptos.Cryptos
 	Validator      *validator.Validator
+	Mailer         mailer.Mailer
 }
 
 type AppFunc func(*Application)
@@ -26,6 +28,10 @@ func defaultApp() Application {
 		Cryptos:        NewCryptos(myConfig),
 		Validator:      NewValidator(),
 	}
+}
+
+func WithMailer(app *Application) {
+	app.Mailer = NewMailer(app.Config)
 }
 
 func NewApp(opts ...AppFunc) *Application {

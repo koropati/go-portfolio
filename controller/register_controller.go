@@ -17,11 +17,11 @@ type RegisterController struct {
 	Validator   *validator.Validator
 }
 
-func (rc *RegisterController) Index(c *gin.Context) {
+func (ctr *RegisterController) Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.tmpl", nil)
 }
 
-func (rc *RegisterController) Register(c *gin.Context) {
+func (ctr *RegisterController) Register(c *gin.Context) {
 	var request domain.RegisterUser
 
 	err := c.ShouldBind(&request)
@@ -30,7 +30,7 @@ func (rc *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
-	err = rc.Validator.Validate(request)
+	err = ctr.Validator.Validate(request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
@@ -42,7 +42,7 @@ func (rc *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
-	err = rc.UserUsecase.Create(c, userData)
+	err = ctr.UserUsecase.Create(c, userData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return

@@ -22,19 +22,19 @@ type LogoutController struct {
 	Validator           *validator.Validator
 }
 
-func (lc *LogoutController) Logout(c *gin.Context) {
+func (ctr *LogoutController) Logout(c *gin.Context) {
 
-	refreshToken, errGetRefresh := middleware.GetAuthContext(c, lc.Cryptos, "refresh")
+	refreshToken, errGetRefresh := middleware.GetAuthContext(c, ctr.Cryptos, "refresh")
 	if errGetRefresh != nil {
 		log.Printf("Error Get Refresh Token : %v\n", errGetRefresh)
 	}
-	accessToken, errGetAccess := middleware.GetAuthContext(c, lc.Cryptos, "access")
+	accessToken, errGetAccess := middleware.GetAuthContext(c, ctr.Cryptos, "access")
 	if errGetAccess != nil {
 		log.Printf("Error Get Access Token : %v\n", errGetRefresh)
 	}
 
-	lc.AccessTokenUsecase.Delete(c, accessToken)
-	lc.RefreshTokenUsecase.Delete(c, refreshToken)
+	ctr.AccessTokenUsecase.Delete(c, accessToken)
+	ctr.RefreshTokenUsecase.Delete(c, refreshToken)
 
 	session := sessions.Default(c) // Get the current session
 

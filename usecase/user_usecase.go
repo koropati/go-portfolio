@@ -38,6 +38,12 @@ func (u *userUsecase) Update(c context.Context, id uuid.UUID, user domain.User) 
 	return u.userRepository.Update(ctx, id, user)
 }
 
+func (u *userUsecase) UpdatePassword(c context.Context, id uuid.UUID, newPasswordHash string) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+	return u.userRepository.UpdatePassword(ctx, id, newPasswordHash)
+}
+
 func (u *userUsecase) Delete(c context.Context, id uuid.UUID) error {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()

@@ -49,3 +49,9 @@ func (a *forgotPasswordTokenUsecase) Delete(c context.Context, token string) err
 	defer cancel()
 	return a.forgotPasswordTokenRepository.Delete(ctx, token)
 }
+
+func (a *forgotPasswordTokenUsecase) GetUserID(c context.Context, token string) (userID uuid.UUID, err error) {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.forgotPasswordTokenRepository.GetUserID(ctx, token)
+}

@@ -8,6 +8,7 @@ import (
 	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/koropati/go-portfolio/domain"
+	randomstr "github.com/koropati/go-portfolio/internal/reandomstr"
 )
 
 const (
@@ -90,6 +91,31 @@ func CreateRefreshToken(user *domain.User, secret string, expiry int, accessToke
 		return "", err
 	}
 	return rt, err
+}
+
+func CreateForgotToken(user *domain.User, expiry int, forgotPasswordTokenUsecase domain.ForgotPasswordTokenUsecase) (forgotToken string, err error) {
+	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
+	uuidData, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
+
+	randStr := randomstr.New(true, true, true, false)
+	tokenData := randStr.GenerateRandomString(24)
+
+	err = forgotPasswordTokenUsecase.Create(context.Background(), domain.ForgotPasswordToken{
+		ID:        uuidData,
+		Token:     tokenData,
+		UserID:    user.ID,
+		Revoked:   false,
+		CreatedAt: time.Now().Unix(),
+		ExpiresAt: exp,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return tokenData, nil
 }
 
 func IsAuthorized(requestToken string, secret string) (bool, error) {

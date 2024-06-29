@@ -40,12 +40,11 @@ func TestCreateUrlVerificationEmail(t *testing.T) {
 	request := &http.Request{
 		Host: exampleHost,
 	}
-	apiVersion := "v1"
 	verificationToken := "abc123"
 
-	expectedResult := "http://example.com/v1/verify-email?token=abc123"
+	expectedResult := "http://example.com/verify-email?token=abc123"
 
-	result := urlutil.CreateUrlVerificationEmail(request, apiVersion, verificationToken)
+	result := urlutil.CreateUrlVerificationEmail(request, verificationToken)
 	assert.Equal(t, expectedResult, result, errMsgUnexpectedResult)
 }
 
@@ -118,9 +117,9 @@ func TestGenerateRedirectForgotPassword(t *testing.T) {
 	msg := "Berhasil"
 	forgotPasswordToken := "abc123"
 
-	expectedResult := "http://example.com/reset-password?success=true&msg=Berhasil&t=abc123"
+	expectedResult := "http://example.com/reset-password?success=true&msg=Berhasil&t=abc123&name="
 
-	result := urlutil.GenerateRedirectForgotPassword(baseUrlFrontEnd, pathUrl, isSuccess, msg, forgotPasswordToken)
+	result := urlutil.GenerateRedirectForgotPassword(baseUrlFrontEnd, pathUrl, isSuccess, msg, forgotPasswordToken, "")
 	assert.Equal(t, expectedResult, result, errMsgUnexpectedResult)
 }
 
@@ -128,11 +127,10 @@ func TestCreateUrlForgotPassword(t *testing.T) {
 	request := &http.Request{
 		Host: exampleHost,
 	}
-	apiVersion := "v1"
 	forgotPasswordToken := "abc123"
 
-	expectedResult := "http://example.com/v1/verify-forgot-password?token=abc123"
+	expectedResult := "http://example.com/verify-forgot-password?token=abc123"
 
-	result := urlutil.CreateUrlForgotPassword(request, apiVersion, forgotPasswordToken)
+	result := urlutil.CreateUrlForgotPassword(request, forgotPasswordToken)
 	assert.Equal(t, expectedResult, result, errMsgUnexpectedResult)
 }

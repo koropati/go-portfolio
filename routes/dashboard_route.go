@@ -6,7 +6,7 @@ import (
 )
 
 func NewDashboardPageRouter(cfg *SetupConfig, group *gin.RouterGroup) {
-	sc := controller.DashboardPageController{
+	sc := controller.DashboardController{
 		Config:    cfg.Config,
 		Cryptos:   cfg.Cryptos,
 		Validator: cfg.Validator,

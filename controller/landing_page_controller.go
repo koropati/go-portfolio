@@ -15,6 +15,6 @@ type LandingPageController struct {
 	Validator *validator.Validator
 }
 
-func (rc *LandingPageController) Index(c *gin.Context) {
+func (ctr *LandingPageController) Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "landing.tmpl", nil)
 }

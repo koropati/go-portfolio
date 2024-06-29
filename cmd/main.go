@@ -214,7 +214,7 @@ func handleCommand() {
 		switch command := os.Args[1]; command {
 
 		case "server":
-			app := bootstrap.NewApp()
+			app := bootstrap.NewApp(bootstrap.WithMailer)
 			timeout := time.Duration(app.Config.ContextTimeout) * time.Second
 			db := app.DB
 			defer app.CloseDBConnection()
@@ -236,6 +236,7 @@ func handleCommand() {
 				Cryptos:        app.Cryptos,
 				Gin:            gin,
 				Validator:      app.Validator,
+				Mailer:         app.Mailer,
 			}
 
 			routes.Setup(&routeConfig)

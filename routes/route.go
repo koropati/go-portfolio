@@ -8,6 +8,7 @@ import (
 	"github.com/koropati/go-portfolio/bootstrap"
 	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/cryptos"
+	"github.com/koropati/go-portfolio/internal/mailer"
 	"github.com/koropati/go-portfolio/internal/validator"
 	"github.com/koropati/go-portfolio/middleware"
 	"github.com/koropati/go-portfolio/repository"
@@ -33,6 +34,7 @@ type SetupConfig struct {
 	Cryptos        cryptos.Cryptos
 	Gin            *gin.Engine
 	Validator      *validator.Validator
+	Mailer         mailer.Mailer
 }
 
 func Setup(config *SetupConfig) {
@@ -50,6 +52,7 @@ func Setup(config *SetupConfig) {
 	NewRegisterRouter(config, publicRouter)
 	NewLoginRouter(config, publicRouter)
 	NewLogoutRouter(config, publicRouter)
+	NewForgotPasswordRouter(config, publicRouter)
 
 	privateRouter := config.Gin.Group("/")
 	privateRouter.Use(middleware.AuthMiddleware(config.Config.AccessTokenSecret, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))

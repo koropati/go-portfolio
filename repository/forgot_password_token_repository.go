@@ -75,3 +75,12 @@ func (r *forgotPasswordTokenRepository) Delete(c context.Context, token string) 
 	}
 	return nil
 }
+
+func (r *forgotPasswordTokenRepository) GetUserID(c context.Context, token string) (userID uuid.UUID, err error) {
+	var forgotPasswordToken domain.ForgotPasswordToken
+	result := r.database.WithContext(c).Table(r.table).Where("token = ? AND revoked = ?", token, false).First(&forgotPasswordToken)
+	if result.Error != nil || result.RowsAffected == 0 {
+		return uuid.Nil, errors.New("failed get user id")
+	}
+	return forgotPasswordToken.UserID, nil
+}

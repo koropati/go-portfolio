@@ -22,6 +22,7 @@ type Config struct {
 	AccessTokenExpiryHour       int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	RefreshTokenExpiryHour      int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	VerificationEmailExpiryHour int    `mapstructure:"VERIFICATION_EMAIL_EXPIRY_HOUR"`
+	ForgotTokenExpiryHour       int    `mapstructure:"FORGOT_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret           string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	RefreshTokenSecret          string `mapstructure:"REFRESH_TOKEN_SECRET"`
 	AmqpHost                    string `mapstructure:"AMQP_HOST"`

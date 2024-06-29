@@ -24,6 +24,7 @@ type ForgotPasswordTokenRepository interface {
 	Revoke(c context.Context, token string) error
 	RevokeByUserID(c context.Context, userID uuid.UUID) error
 	IsValid(c context.Context, token string) bool
+	GetUserID(c context.Context, token string) (userID uuid.UUID, err error)
 	Delete(c context.Context, token string) error
 }
 
@@ -32,5 +33,6 @@ type ForgotPasswordTokenUsecase interface {
 	Revoke(c context.Context, token string) error
 	RevokeByUserID(c context.Context, userID uuid.UUID) error
 	IsValid(c context.Context, token string) bool
+	GetUserID(c context.Context, token string) (userID uuid.UUID, err error)
 	Delete(c context.Context, token string) error
 }
