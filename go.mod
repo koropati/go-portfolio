@@ -15,6 +15,7 @@ require (
 	github.com/vektra/mockery v1.1.2
 	golang.org/x/crypto v0.23.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
+	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gorm v1.25.10
 )
