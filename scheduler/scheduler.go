@@ -30,12 +30,15 @@ func InitCron(config *SetupConfig) {
 	sch := cron.New()
 
 	_, _ = sch.AddFunc("* * * * *", func() {
+		log.Print("Start Task TaskRemoveAccessToken()")
 		TaskRemoveAccessToken(config)
 	})
 	_, _ = sch.AddFunc("* * * * *", func() {
+		log.Print("Start Task TaskRemoveRefrehToken()")
 		TaskRemoveRefrehToken(config)
 	})
 	_, _ = sch.AddFunc("* * * * *", func() {
+		log.Print("Start Task TaskRemoveForgotPasswordToken()")
 		TaskRemoveForgotPasswordToken(config)
 	})
 
