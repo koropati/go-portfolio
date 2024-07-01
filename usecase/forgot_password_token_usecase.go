@@ -55,3 +55,9 @@ func (a *forgotPasswordTokenUsecase) GetUserID(c context.Context, token string) 
 	defer cancel()
 	return a.forgotPasswordTokenRepository.GetUserID(ctx, token)
 }
+
+func (a *forgotPasswordTokenUsecase) DeleteExpiredToken(c context.Context, millisDateTime int64) error {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.forgotPasswordTokenRepository.DeleteExpiredToken(ctx, millisDateTime)
+}

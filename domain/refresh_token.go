@@ -27,6 +27,7 @@ type RefreshTokenRepository interface {
 	RevokeByUserID(c context.Context, userID uuid.UUID) error
 	IsValid(c context.Context, token string) bool
 	Delete(c context.Context, token string) error
+	DeleteExpiredToken(c context.Context, millisDateTime int64) error
 }
 
 type RefreshTokenUsecase interface {
@@ -36,4 +37,5 @@ type RefreshTokenUsecase interface {
 	RevokeByUserID(c context.Context, userID uuid.UUID) error
 	IsValid(c context.Context, token string) bool
 	Delete(c context.Context, token string) error
+	DeleteExpiredToken(c context.Context, millisDateTime int64) error
 }

@@ -49,3 +49,9 @@ func (a *accessTokenUsecase) Delete(c context.Context, token string) error {
 	defer cancel()
 	return a.accessTokenRepository.Delete(ctx, token)
 }
+
+func (a *accessTokenUsecase) DeleteExpiredToken(c context.Context, millisDateTime int64) error {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.accessTokenRepository.DeleteExpiredToken(ctx, millisDateTime)
+}

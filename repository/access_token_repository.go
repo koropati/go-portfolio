@@ -75,3 +75,11 @@ func (r *accessTokenRepository) Delete(c context.Context, token string) error {
 	}
 	return nil
 }
+
+func (r *accessTokenRepository) DeleteExpiredToken(c context.Context, millisDateTime int64) error {
+	result := r.database.WithContext(c).Table(r.table).Where("expires_at < ?", millisDateTime).Or("revoked = ?", 1).Delete(&domain.AccessToken{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

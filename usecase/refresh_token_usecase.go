@@ -55,3 +55,9 @@ func (a *refreshTokenUsecase) Delete(c context.Context, token string) error {
 	defer cancel()
 	return a.refreshTokenRepository.Delete(ctx, token)
 }
+
+func (a *refreshTokenUsecase) DeleteExpiredToken(c context.Context, millisDateTime int64) error {
+	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
+	defer cancel()
+	return a.refreshTokenRepository.DeleteExpiredToken(ctx, millisDateTime)
+}
