@@ -90,3 +90,11 @@ func (r *refreshTokenRepository) Delete(c context.Context, token string) error {
 	}
 	return nil
 }
+
+func (r *refreshTokenRepository) DeleteExpiredToken(c context.Context, millisDateTime int64) error {
+	result := r.database.WithContext(c).Table(r.table).Where("expires_at < ?", millisDateTime).Or("revoked = ?", 1).Delete(&domain.RefreshToken{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

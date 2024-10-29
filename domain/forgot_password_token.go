@@ -26,6 +26,7 @@ type ForgotPasswordTokenRepository interface {
 	IsValid(c context.Context, token string) bool
 	GetUserID(c context.Context, token string) (userID uuid.UUID, err error)
 	Delete(c context.Context, token string) error
+	DeleteExpiredToken(c context.Context, millisDateTime int64) error
 }
 
 type ForgotPasswordTokenUsecase interface {
@@ -35,4 +36,5 @@ type ForgotPasswordTokenUsecase interface {
 	IsValid(c context.Context, token string) bool
 	GetUserID(c context.Context, token string) (userID uuid.UUID, err error)
 	Delete(c context.Context, token string) error
+	DeleteExpiredToken(c context.Context, millisDateTime int64) error
 }

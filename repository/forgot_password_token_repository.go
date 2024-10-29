@@ -84,3 +84,11 @@ func (r *forgotPasswordTokenRepository) GetUserID(c context.Context, token strin
 	}
 	return forgotPasswordToken.UserID, nil
 }
+
+func (r *forgotPasswordTokenRepository) DeleteExpiredToken(c context.Context, millisDateTime int64) error {
+	result := r.database.WithContext(c).Table(r.table).Where("expires_at < ?", millisDateTime).Or("revoked = ?", 1).Delete(&domain.ForgotPasswordToken{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

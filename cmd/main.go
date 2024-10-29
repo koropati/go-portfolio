@@ -17,6 +17,7 @@ import (
 	"github.com/koropati/go-portfolio/bootstrap"
 	"github.com/koropati/go-portfolio/middleware"
 	"github.com/koropati/go-portfolio/routes"
+	"github.com/koropati/go-portfolio/scheduler"
 	"github.com/vektra/mockery/mockery"
 )
 
@@ -241,6 +242,23 @@ func handleCommand() {
 
 			routes.Setup(&routeConfig)
 			gin.Run(app.Config.ServerAddress)
+
+		case "scheduler":
+			app := bootstrap.NewApp(bootstrap.WithMailer)
+			timeout := time.Duration(app.Config.ContextTimeout) * time.Second
+			db := app.DB
+			defer app.CloseDBConnection()
+
+			cronConfig := scheduler.SetupConfig{
+				Config:         app.Config,
+				Timeout:        timeout,
+				DB:             db,
+				CasbinEnforcer: app.CasbinEnforcer,
+				Cryptos:        app.Cryptos,
+				Mailer:         app.Mailer,
+			}
+
+			scheduler.InitCron(&cronConfig)
 
 		case "help":
 			log.Printf("Available List Command:\n")
