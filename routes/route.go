@@ -20,10 +20,6 @@ const (
 	RoleSuperAdmin = "super_admin"
 	RoleAdmin      = "admin"
 	RoleStaff      = "staff"
-	DeviceSwitch   = "switch"
-	DeviceHps      = "hps"
-	DeviceIr       = "ir"
-	DeviceAc       = "ac"
 )
 
 type SetupConfig struct {
@@ -58,5 +54,6 @@ func Setup(config *SetupConfig) {
 	privateRouter := config.Gin.Group("/")
 	privateRouter.Use(middleware.AuthMiddleware(config.Config.AccessTokenSecret, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))
 	NewDashboardPageRouter(config, privateRouter)
+	NewWorkExperienceRouter(config, privateRouter)
 
 }

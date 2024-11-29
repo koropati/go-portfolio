@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/casbin/casbin"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/cryptos"
@@ -29,6 +30,9 @@ func AuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryp
 			if err != nil {
 				refreshTokenUsecase.Delete(c, refreshToken)
 			}
+			session := sessions.Default(c)
+			session.Clear()
+			session.Save()
 			c.Redirect(http.StatusFound, LoginUrlRedirect)
 			return
 		}
@@ -56,11 +60,11 @@ func AuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryp
 
 func AuthPublicMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryptos.Cryptos, accessTokenUsecase domain.AccessTokenUsecase, refreshTokenUsecase domain.RefreshTokenUsecase) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authToken, _ := GetAuthContext(c, cryptos, "access")
+		authToken, err := GetAuthContext(c, cryptos, "access")
 		if c.Request.URL.Path == "/" || c.Request.URL.Path == "/logout" {
 			c.Next()
 		}
-		if authToken != "" {
+		if authToken != "" && err == nil {
 			c.Redirect(http.StatusFound, DashboardUrlRedirect)
 		} else {
 			c.Next()

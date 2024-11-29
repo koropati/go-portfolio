@@ -12,15 +12,23 @@ const (
 )
 
 type WorkExperience struct {
-	ID             uuid.UUID  `gorm:"primaryKey;type:char(36)" json:"id"`
-	CompanyName    string     `gorm:"size:255;index" json:"company_name"`
-	Role           string     `gorm:"size:255;index" json:"role"`
-	StartDate      time.Time  `json:"start_date"`
+	ID             uuid.UUID  `gorm:"primaryKey;type:char(36)" validate:"required" json:"id"`
+	CompanyName    string     `gorm:"size:255;index" validate:"required" json:"company_name"`
+	Role           string     `gorm:"size:255;index" validate:"required" json:"role"`
+	StartDate      time.Time  `json:"start_date" validate:"required"`
 	EndDate        *time.Time `json:"end_date"`
 	Location       string     `json:"location"`
 	Description    string     `json:"description"`
 	CompanyLogoURL string     `json:"company_logo_url"`
 	IsActive       bool       `gorm:"index" json:"is_active"`
+}
+
+func (data *WorkExperience) GenerateID() (err error) {
+	data.ID, err = uuid.NewUUID()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type WorkExperienceRepository interface {

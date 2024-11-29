@@ -4,7 +4,7 @@ p, anonymous, /signup, *
 p, anonymous, /forgot-password, *
 p, anonymous, /verify-forgot-password, *
 p, anonymous, /reset-password, *
-p, anonymous, /pricing, GET
+p, anonymous, /work-experience, GET
 p, admin, /logout, *
 p, admin, /logout/*, *
 p, admin, /refresh, *
@@ -13,3 +13,5 @@ p, admin, /assets/*, *
 p, admin, /service, GET
 p, admin, /dashboard, *
 p, admin, /dashboard/*, *
+p, admin, /work-experience, *
+p, admin, /work-experience/*, *

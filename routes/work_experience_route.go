@@ -17,5 +17,6 @@ func NewWorkExperienceRouter(cfg *SetupConfig, group *gin.RouterGroup) {
 		Validator:             cfg.Validator,
 	}
 
+	group.GET("/work-experience", ctrl.Index)
 	group.POST("/work-experience", ctrl.Create)
 }
