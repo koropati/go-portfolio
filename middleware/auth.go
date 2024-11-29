@@ -24,6 +24,11 @@ func AuthMiddleware(secret string, casbinEnforcer *casbin.Enforcer, cryptos cryp
 		}
 
 		if !accessTokenUsecase.IsValid(c, authToken) {
+			accessTokenUsecase.Delete(c, authToken)
+			refreshToken, err := GetAuthContext(c, cryptos, "refresh")
+			if err != nil {
+				refreshTokenUsecase.Delete(c, refreshToken)
+			}
 			c.Redirect(http.StatusFound, LoginUrlRedirect)
 			return
 		}
