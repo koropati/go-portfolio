@@ -54,6 +54,7 @@ func Setup(config *SetupConfig) {
 	NewLogoutRouter(config, publicRouter)
 	NewForgotPasswordRouter(config, publicRouter)
 
+	// All Private APIs
 	privateRouter := config.Gin.Group("/")
 	privateRouter.Use(middleware.AuthMiddleware(config.Config.AccessTokenSecret, config.CasbinEnforcer, config.Cryptos, usecase.NewAccessTokenUsecase(at, config.Timeout), usecase.NewRefreshTokenUsecase(rt, config.Timeout)))
 	NewDashboardPageRouter(config, privateRouter)
