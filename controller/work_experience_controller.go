@@ -8,6 +8,7 @@ import (
 	"github.com/koropati/go-portfolio/domain"
 	"github.com/koropati/go-portfolio/internal/converter"
 	"github.com/koropati/go-portfolio/internal/cryptos"
+	"github.com/koropati/go-portfolio/internal/uploader"
 	"github.com/koropati/go-portfolio/internal/validator"
 )
 
@@ -24,7 +25,6 @@ func (ctr *WorkExperienceController) Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "work_experience.tmpl", nil)
 }
 
-
 func (ctr *WorkExperienceController) Create(c *gin.Context) {
 
 	var request domain.WorkExperience
@@ -34,6 +34,22 @@ func (ctr *WorkExperienceController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
 		return
 	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
+		return
+	}
+
+	filePath, err := uploader.UploadFile(c, file)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.JsonResponse{Message: err.Error(), Success: false})
+		return
+	} else {
+		request.SetFileURL(filePath)
+	}
+
+	request.SetActive()
 
 	err = request.GenerateID()
 	if err != nil {

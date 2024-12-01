@@ -38,5 +38,6 @@ func AutoMigrate(db *gorm.DB) {
 		&domain.AccessToken{},
 		&domain.RefreshToken{},
 		&domain.ForgotPasswordToken{},
+		&domain.WorkExperience{},
 	)
 }
