@@ -36,6 +36,7 @@ type SetupConfig struct {
 func Setup(config *SetupConfig) {
 
 	config.Gin.Static("assets", "./templates/assets")
+	config.Gin.Static("/storage", "./storage")
 	config.Gin.LoadHTMLGlob("./templates/*.tmpl")
 
 	at := repository.NewAccessTokenRepository(config.DB, domain.AccessTokenTable, config.Config.DefaultPageNumber, config.Config.DefaultPageSize)

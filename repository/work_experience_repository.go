@@ -40,6 +40,10 @@ func (u *workExperienceRepository) Retrieve(c context.Context, filter domain.Fil
 		query = query.Where("company_name LIKE ?", "%"+filter.Search+"%")
 	}
 
+	if filter.Limit <= 0 {
+		filter.Limit = 5
+	}
+
 	if filter.WithPagination {
 		offset := (filter.Page - 1) * filter.Limit
 		query = query.Offset(int(offset)).Limit(int(filter.Limit))

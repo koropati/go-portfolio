@@ -16,7 +16,7 @@ func NewDatabase(config *Config) *gorm.DB {
 	dbPass := config.DBPass
 	dbName := config.DBName
 
-	dbConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
+	dbConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbUser, dbPass, dbHost, dbPort, dbName)
 	db, err := gorm.Open(mysql.Open(dbConnString), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")

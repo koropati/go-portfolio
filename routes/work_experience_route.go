@@ -18,5 +18,9 @@ func NewWorkExperienceRouter(cfg *SetupConfig, group *gin.RouterGroup) {
 	}
 
 	group.GET("/work-experience", ctrl.Index)
-	group.POST("/work-experience", ctrl.Create)
+	group.GET("/api/work-experience", ctrl.Get)
+	group.GET("/api/work-experiences", ctrl.Retrieve)
+	group.POST("/api/work-experience", ctrl.Create)
+	group.PUT("/api/work-experience", ctrl.Update)
+	group.DELETE("/api/work-experience", ctrl.Delete)
 }
